@@ -1,28 +1,35 @@
 *** Settings ***
 Library     SeleniumLibrary
 Library     ../../utils/python/webdriver_management.py
+Library     String
+Resource    ../../Resource/frontend/general_setting.robot
+Resource    ../../Variables/all_variables.robot
+
+
+Suite Setup       Install Web Driver and Open Browser      http://google.com     chrome
+
+
+Suite Teardown    Close Session
+
+
 
 *** Test Cases ***
-Initial Test
-    Open Browser and Install Web Driver      172.16.12.155     chrome
+Test Case 1: Get Current Day
+    ${current_day}     Get Current Day
+    Log To Console     Today is ${current_day}!
+    ${current_time}    Get Current Time
+    Log To Console     Now is ${current_time}!
+    ${index}   Get String Position in a Array   @{day_of_the_week}   string=${current_day}
+    Write on Search Field   ${lottery_games}[${index}] last result
+
 
 *** Keywords ***
-Open Browser and Install Web Driver
-    #Used to properly configure headless mode. Chrome is the default headless browser.
-    [arguments]             ${ip}              ${browser}
-    ${browser}   ${webdriver}=        get_webdriver     ${browser}
-    ${webdriver_path}=   Evaluate      $webdriver.install()
-    Log To Console    ${webdriver_path}
-    IF  'headless'=='${browser}'
-    #utilizado para rodar testes frontend dentro de containers
-        ${chrome_options}=     Evaluate    sys.modules['selenium.webdriver'].ChromeOptions()    sys, selenium.webdriver
-        Call Method    ${chrome_options}   add_argument    headless
-        Call Method    ${chrome_options}   add_argument    no-sandbox
-        Call Method    ${chrome_options}   add_argument    disable-dev-shm-usage
-        Call Method    ${chrome_options}   add_argument    window-size\=1920,1080
-        Call Method    ${chrome_options}   add_argument    log-level\=3
-        ${options}=     Call Method     ${chrome_options}    to_capabilities
-        SeleniumLibrary.Open Browser  ${ip}   browser=chrome  desired_capabilities=${options}   executable_path=${webdriver_path}
-    ELSE
-        SeleniumLibrary.Open Browser  ${ip}    ${browser}   executable_path=${webdriver_path}
+Get String Position in a Array
+    [Arguments]    @{array}    ${string}
+    ${length}   Get Length     ${array}
+    FOR    ${counter}    IN RANGE    0    ${length}
+        IF  '${array}[${counter}]'=='${string}'
+            Return From Keyword    ${counter}
+            Exit For Loop
+        END
     END
