@@ -39,12 +39,18 @@ Test Case 7: Compare Google Results For Lotomania on Loteria Federal
 Check Results
     [Arguments]    ${lottery}
     Write on Search Field   ${lottery}
-    Get Lottery Results on Google
+    ${google_results}    Get Lottery Results on Google
+    Compare Google Results With Loterica Federal     ${google_results}
+
+
+Compare Google Results With Loterica Federal
+    [Arguments]    ${google_results}
+    Log To Console    Checking on Brazilian Oficial Web site, The Last Result: ${google_results}
 
 Get Lottery Results on Google
     ${number_of_elements}    Get Element Count    ${google_result_holder}
     @{google_results}        Google Results       ${number_of_elements}
-    Log To Console    ${google_results}
+    Return From Keyword      ${google_results}
 
 Google Results
     [Arguments]   ${iterations}
