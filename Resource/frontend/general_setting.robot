@@ -38,9 +38,9 @@ Write on Search Field
 
 #### Generic Keywords
 Wait and Click Element
-    [Arguments]    ${button}
+    [Arguments]    ${button}    ${timeout}=5
     Sleep   500ms
-    Wait Until Element Is Visible    ${button}
+    Wait Until Element Is Visible    ${button}    timeout=${timeout}
     Click Element    ${button}
 
 Press Enter
